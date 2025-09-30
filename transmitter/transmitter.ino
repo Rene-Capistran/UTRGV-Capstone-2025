@@ -16,7 +16,7 @@ void loop() {
   // manualComm();
 
   uartTransmitter.println("Hello, world!");
-  delay(500);
+  delay(50);
   
 
 }
