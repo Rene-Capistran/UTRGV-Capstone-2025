@@ -5,6 +5,8 @@ void blink();
 
 SoftwareSerial uartReceiver(2, 3);
 
+int count = 0;
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
@@ -15,8 +17,13 @@ void setup() {
 
 void loop() {
   if(uartReceiver.available() > 0){
+    count++;
+    char buffer[20];
     String message = uartReceiver.readStringUntil('\n');
-    Serial.println(message);
+
+    // Formatting the output
+    String msg = static_cast<String>(count) + ": " + message;
+    Serial.println(msg);
   }
 }
 
