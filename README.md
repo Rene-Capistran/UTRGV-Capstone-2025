@@ -1,5 +1,5 @@
 # UTRGV-Capstone-2025
-Dependencies
+##Dependencies
 
 PicoSDK:
 https://www.picotech.com/downloads/sdk-release/pico-software-development-kit-64bit
