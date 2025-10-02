@@ -1,10 +1,9 @@
 from picosdk.ps2000 import ps2000
 from matplotlib import pyplot as plt
-from ctypes import c_float, c_int16, c_int32, byref
+from ctypes import c_int16, c_int32, byref
 from time import sleep
 
 # Initialise PicoScope
-
 handle = ps2000.ps2000_open_unit()   # returns a scope handle (int)
 if handle <= 0:
     raise RuntimeError("Failed to open scope")
@@ -71,16 +70,36 @@ values = ps2000.ps2000_get_times_and_values(
 
 if values <= 0:
     raise RuntimeError(f"ps2000_get_times_and_values failed with value: {values}")
+
 # Plot
+voltage = 5
+channel_a_volts = [x * voltage / 32767 for x in buffer_a]
+
 ps2000.ps2000_close_unit(handle)
 
 time_list = list(times)
-channel_a_list = list(buffer_a)
+channel_a_list = list(channel_a_volts)
 
 plt.plot(time_list, channel_a_list)
 # Add labels to pyplot
-plt.xlabel("Time")     
-plt.ylabel("Amplitude")
+plt.xlabel("Time (ns)")     
+plt.ylabel("Amplitude (V)")
 plt.grid(True)
 plt.show()
 
+current_point = 0
+repeats = 0
+point_arr = []
+for point in channel_a_volts:
+    print(point)
+    if point > 1:
+        point = 5
+    else:
+        point = 0
+
+    if point == current_point or repeats <= 3:
+        repeats += 1
+    else:
+        point_arr.append(point)
+
+print(point_arr)
