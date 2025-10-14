@@ -21,7 +21,7 @@ void loop() {
     char buffer[20];
     String message = uartReceiver.readStringUntil('\n');
 
-    // Formatting the output
+    // Output formatting
     String msg = static_cast<String>(count) + ": " + message;
     Serial.println(msg);
   }

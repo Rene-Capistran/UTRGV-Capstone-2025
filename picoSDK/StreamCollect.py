@@ -155,7 +155,7 @@ with ps2000.open_unit() as device:
     fig, ax = plt.subplots()
 
     ax.set_xlabel('time/ms')
-    ax.set_ylabel('voltage/mV')
+    ax.set_ylabel('voltage/V')
     ax.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts)), volts)
 
     plt.show()
