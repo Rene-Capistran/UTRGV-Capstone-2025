@@ -1,26 +1,26 @@
 {
     "Arduino": {
         "UNO": {
-            "Captures_Small": 0,
-            "Captures_Medium": 0,
+            "Captures_Small": 4,
+            "Captures_Medium": 6,
             "Captures_Large": 0
         },
         "Nano": {
             "Captures_Small": 0,
-            "Captures_Medium": 1,
+            "Captures_Medium": 2,
             "Captures_Large": 0
         }
     },
     "RPi": {
-        "5b": {
-            "Captures_Small": 0,
+        "5B": {
+            "Captures_Small": 4,
             "Captures_Medium": 0,
             "Captures_Large": 0
         }
     },
     "ESP": {
         "32": {
-            "Captures_Small": 0,
+            "Captures_Small": 7,
             "Captures_Medium": 0,
             "Captures_Large": 0
         }

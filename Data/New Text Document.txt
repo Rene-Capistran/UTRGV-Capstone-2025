@@ -1,0 +1,3 @@
+Small: Hello, world!
+Medium: The quick brown fox jumps over the lazy dog.
+Large:
