@@ -76,7 +76,7 @@ ps2000.ps2000_set_channel(handle, channel, enabled, Dc, volt_range)
 
 # timebase
 # handle, timebase, sample_number, *time_interval, *time_units, oversample, *max_samples
-timebase        = c_int16(10) 
+timebase        = c_int16(11) 
 samples_num     = c_int32(3968) # max is 3968
 time_interval   = c_int32(0)
 time_units      = c_int16(0)
