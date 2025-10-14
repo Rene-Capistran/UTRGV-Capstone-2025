@@ -7,6 +7,10 @@ https://www.picotech.com/downloads/sdk-release/pico-software-development-kit-64b
 python wrappers:
 https://github.com/picotech/picosdk-python-wrappers
 
+git clone https://github.com/picotech/picosdk-python-wrappers.git
+cd picotech
+pip install ./
+
 
 ## Documentation
 PicoSDK Docs:

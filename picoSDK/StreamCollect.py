@@ -11,7 +11,8 @@ import csv
 import scipy.signal as signal
 
 BAUD = 9600
-voltage_threshold = 2.5
+
+
 
 ## Functions
 # get overview buffers
@@ -66,14 +67,20 @@ while validation_loop:
     elif platform.lower() == 'b':
         platform = 'RPi'
         model = input("A) 5B\n0) Not listed\n> ")
+        if model.lower() == 'a':
+            model = '5B' 
     elif platform.lower() == 'c':
         platform = 'ESP'
         model = input("A) 32\n0) Not listed\n> ")
+        if model.lower() == 'a':
+            model = '32' 
     elif platform == '0':
         pass
     else:
         print("Invalid input")
         validation_loop = True
+
+
 
 validation_loop = True
 while validation_loop:
@@ -104,7 +111,7 @@ while validation_loop:
         print("Invalid input")
         validation_loop = True
 
-
+voltage_threshold = 5
 # Initialise PicoScope
 with ps2000.open_unit() as device:
     print('Device info: {}'.format(device.info))
