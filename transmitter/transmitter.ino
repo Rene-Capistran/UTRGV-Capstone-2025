@@ -15,7 +15,7 @@ void setup() {
 void loop() {
   // uartTransmitter.println("Hello, world!");
   uartTransmitter.println("The quick brown fox jumps over the lazy dog.");
-  delay(50);
+  delay(200);
 }
 
 

@@ -2,12 +2,12 @@
     "Arduino": {
         "UNO": {
             "Captures_Small": 4,
-            "Captures_Medium": 6,
+            "Captures_Medium": 5,
             "Captures_Large": 0
         },
         "Nano": {
             "Captures_Small": 0,
-            "Captures_Medium": 2,
+            "Captures_Medium": 4,
             "Captures_Large": 0
         }
     },
@@ -20,8 +20,8 @@
     },
     "ESP": {
         "32": {
-            "Captures_Small": 7,
-            "Captures_Medium": 0,
+            "Captures_Small": 19,
+            "Captures_Medium": 6,
             "Captures_Large": 0
         }
     }

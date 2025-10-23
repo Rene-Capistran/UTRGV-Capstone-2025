@@ -13,7 +13,6 @@ import scipy.signal as signal
 BAUD = 9600
 
 
-
 ## Functions
 # get overview buffers
 CALLBACK = C_CALLBACK_FUNCTION_FACTORY(
@@ -34,14 +33,22 @@ def get_overview_buffers(buffers, _overflow, _triggered_at, _triggered, _auto_st
 
 callback = CALLBACK(get_overview_buffers)
 
-# convert ADC to mV
-def adc_to_mv(values, range_, bitness=16):
+# convert ADC to V
+def adc_to_v(values, range_, bitness=16):
     v_ranges = [10, 20, 50, 100, 200, 500, 1_000, 2_000, 5_000, 10_000, 20_000]
-
-    return [(x * v_ranges[range_]) / (2**(bitness - 1) - 1) for x in values]
+    
+    result = []
+    for x in values:
+        if x >= 0:
+            v = ((x * v_ranges[range_]) / (2**(bitness - 1) - 1)) / 1000
+        else:
+            v = (x * v_ranges[range_]) / (2**(bitness - 1)) / 1000
+        result.append(v)
+    return result
 
 
 # Dynamic device handling
+voltage_threshold = 0
 validation_loop = True
 while validation_loop:
     platform = input("Device platform type\nA) Arduino\nB) Raspberry Pi\nC) ESP\n0) Not listed\n> ")
@@ -62,25 +69,34 @@ while validation_loop:
             validation_loop = True
         elif model.lower() == 'a':
             model = 'Nano'
+            device_voltage = 5
         elif model.lower() == 'b':
             model = 'UNO'
+            device_voltage = 5
+
     elif platform.lower() == 'b':
         platform = 'RPi'
         model = input("A) 5B\n0) Not listed\n> ")
-        if model.lower() == 'a':
-            model = '5B' 
+        if model.lower() not in ['a', '0']:
+            print("Invalid input")
+            validation_loop = True
+        elif model.lower() == 'a':
+            model = '5B'
+            device_voltage = 3.3
     elif platform.lower() == 'c':
         platform = 'ESP'
         model = input("A) 32\n0) Not listed\n> ")
-        if model.lower() == 'a':
-            model = '32' 
+        if model.lower() not in ['a', '0']:
+            print("Invalid input")
+            validation_loop = True
+        elif model.lower() == 'a':
+            model = '32'
+            device_voltage = 3.3
     elif platform == '0':
         pass
     else:
         print("Invalid input")
         validation_loop = True
-
-
 
 validation_loop = True
 while validation_loop:
@@ -88,10 +104,10 @@ while validation_loop:
     data_size = input("Data size\nA) Small\nB) Medium\nc) Large\n> ")
     if data_size.lower() == 'a':
         data_size = 'Small'
-        capture_time = 100_000_000       
+        capture_time = 250_000_000       
     elif data_size.lower() == 'b':
         data_size = 'Medium'
-        capture_time = 300_000_000
+        capture_time = 500_000_000
     elif data_size.lower() == 'c':
         data_size = 'Large'
         capture_time = 1_000_000_000
@@ -99,19 +115,20 @@ while validation_loop:
         print("Invalid input")
         validation_loop = True
 
-validation_loop = True
-while validation_loop:
-    validation_loop = False
-    decode_out = input("Decode bytes?\nY) Yes\nN) No\n> ")
-    if decode_out.lower() == 'y': 
-        decode_out = True
-    elif decode_out.lower() == 'n':
-        decode_out = False
-    else:
-        print("Invalid input")
-        validation_loop = True
 
-voltage_threshold = 5
+if device_voltage == 5:
+    voltage_threshold = 2.5
+    high_threshold = 3.5
+    low_threshold = 1.5
+elif device_voltage == 3.3:
+    voltage_threshold = 3
+    high_threshold = 2.7
+    low_threshold = 1.5 
+else:
+    print("Unknown device voltage, using default threshold of 2.5V")
+    voltage_threshold = 2.5
+
+
 # Initialise PicoScope
 with ps2000.open_unit() as device:
     print('Device info: {}'.format(device.info))
@@ -155,9 +172,14 @@ with ps2000.open_unit() as device:
 
     ps2000.ps2000_stop(device.handle)
 
-    mv_values = adc_to_mv(adc_values, ps2000.PS2000_VOLTAGE_RANGE['PS2000_5V'])
-    # convert mV to V
-    volts = np.array(mv_values) / 1000.0  
+    # Gathering raw data for CSV
+    sample_period_s = float(sample_interval) * 1e-9
+    time_array_s = np.arange(len(adc_values), dtype=np.float64) * sample_period_s
+    time_array_ms = time_array_s * 1e3
+
+    range_index = ps2000.PS2000_VOLTAGE_RANGE['PS2000_5V']
+    volts = np.array(adc_to_v(adc_values, range_index), dtype=np.float64)
+    samples_per_bit = max(1, int(1.0 / (BAUD * sample_period_s)))
 
     fig, ax = plt.subplots()
 
@@ -170,78 +192,132 @@ with ps2000.open_unit() as device:
 
 
 # Decoding bytes
+print("\nDecoding bytes...")
+logic_levels = []
+for v in volts:
+    if v > voltage_threshold:
+        logic_levels.append(1)
+    else:
+        logic_levels.append(0)
 
-if decode_out:
-    print("\nDecoding bytes...")
-    # Convert waveform to logic levels
-    logic_levels = [1 if v > voltage_threshold else 0 for v in volts]
+sample_period = (end_time - start_time) * 1e-9 / len(volts)  
 
-    # Calculate sample period (in seconds)
-    sample_period = (end_time - start_time) * 1e-9 / len(volts)  # total time / number of samples
+# Calculate samples per bit
+samples_per_bit = int(1 / (BAUD * sample_period))
 
-    # Calculate samples per bit
-    samples_per_bit = int(1 / (BAUD * sample_period))
+# Find start bits (falling edge: 1 -> 0)
+bits_per_byte = 10  # 1 start, 8 data, 1 stop
+frame_length = bits_per_byte * samples_per_bit
 
-    # Find start bits (falling edge: 1 -> 0)
-    bits_per_byte = 10  # 1 start, 8 data, 1 stop
-    frame_length = bits_per_byte * samples_per_bit
+# Filter
+volts_filtered = signal.medfilt(volts, kernel_size=5)
 
-    # Filter
-    volts_filtered = signal.medfilt(volts, kernel_size=5)
+# Hysteresis thresholding
+logic_levels = []
+state = 1 if volts_filtered[0] > high_threshold else 0
+for v in volts_filtered:
+    if state == 0 and v > high_threshold:
+        state = 1
+    elif state == 1 and v < low_threshold:
+        state = 0
+    logic_levels.append(state)
 
-    # Hysteresis threshold
-    high_threshold = 3
-    low_threshold = 2
-    logic_levels = []
-    state = 1 if volts_filtered[0] > high_threshold else 0
-    for v in volts_filtered:
-        if state == 0 and v > high_threshold:
-            state = 1
-        elif state == 1 and v < low_threshold:
-            state = 0
-        logic_levels.append(state)
+# Start bit detection
+min_idle_samples = int(0.7 * samples_per_bit)
+decoded_bytes = []
+i = min_idle_samples
+byte_timings = []
+while i < len(logic_levels):
+    if (
+        all(logic_levels[i - min_idle_samples : i])
+        and logic_levels[i - 1] == 1
+        and logic_levels[i] == 0
+    ):
+        bits = []
+        for bit in range(1, bits_per_byte):
+            sample_idx = int(i + (bit - 0.5) * samples_per_bit)
+            if sample_idx < len(logic_levels):
+                bits.append(logic_levels[sample_idx])
+        if len(bits) >= 9:
+            data_bits = bits[1:9]
+            byte = 0
+            for j, b in enumerate(data_bits):
+                byte |= (b << j)
+            decoded_bytes.append(byte)
+            byte_timings.append(i * sample_period) # Time the byte was received
+        i += frame_length
+    else:
+        i += 1
 
-    # Start bit detection
-    min_idle_samples = int(0.7 * samples_per_bit)
-    decoded_bytes = []
-    i = min_idle_samples
-    byte_timings = []
-    while i < len(logic_levels):
-        if (
-            all(logic_levels[i - min_idle_samples : i])
-            and logic_levels[i - 1] == 1
-            and logic_levels[i] == 0
-        ):
-            bits = []
-            for bit in range(1, bits_per_byte):
-                sample_idx = int(i + (bit - 0.5) * samples_per_bit)
-                if sample_idx < len(logic_levels):
-                    bits.append(logic_levels[sample_idx])
-            if len(bits) >= 9:
-                data_bits = bits[1:9]
-                byte = 0
-                for j, b in enumerate(data_bits):
-                    byte |= (b << j)
-                decoded_bytes.append(byte)
-                byte_timings.append(i * sample_period) # Time the byte was received
-            i += frame_length
-        else:
-            i += 1
+print("Decoded bytes:", decoded_bytes)
 
-    print("Decoded bytes:", decoded_bytes)
-
-    for byte in decoded_bytes:
-        if 32 <= byte <= 126:
-            print(chr(byte), end='')
-        else:
-            print('.', end='')
+for byte in decoded_bytes:
+    if 32 <= byte <= 126:
+        print(chr(byte), end='')
+    else:
+        print('.', end='')
 
 
-# Create time array in seconds or ms
-time_array_ns = np.linspace(0, (end_time - start_time), len(volts))  
+
+
+
+
 
 
 # Data Collection
+
+
+# determine idle level using the first 5% of samples
+idle_slice = max(1, int(0.05 * len(volts)))
+idle_mean = np.mean(volts[:idle_slice])
+idle_level = 1 if idle_mean > voltage_threshold else 0
+active_level = 1 - idle_level  
+
+logic = np.asarray(logic_levels, dtype=int)
+
+# find indexes where signal is active (not idle)
+active_idxs = np.where(logic == active_level)[0]
+
+keep = np.zeros(len(volts), dtype=bool)
+if active_idxs.size > 0:
+    # build contiguous runs of active samples
+    breaks = np.where(np.diff(active_idxs) > 1)[0]
+    runs = []
+    start = active_idxs[0]
+    for b in breaks:
+        end = active_idxs[b]
+        runs.append((start, end))
+        start = active_idxs[b + 1]
+    runs.append((start, active_idxs[-1]))
+
+    # margin: include some bits before/after each run (in samples)
+    pre_margin = int(1.5 * samples_per_bit)
+    post_margin = int(1.5 * samples_per_bit)
+
+    for s, e in runs:
+        a = max(0, s - pre_margin)
+        b = min(len(volts), e + post_margin + 1)
+        keep[a:b] = True
+
+# Logic for keeping one contiguous block instead of all of them
+
+else:
+    # no active region found -> keep whole capture
+    keep[:] = True
+
+# extract kept samples and rebase time to start at 0 (ms)
+kept_times = np.asarray(time_array_ms)[keep]
+kept_volts = np.asarray(volts)[keep]
+
+if kept_times.size == 0:
+    kept_times = np.asarray(time_array_ms)
+    kept_volts = np.asarray(volts)
+else:
+    kept_times = kept_times - kept_times[0]
+
+
+
+
 
 dir = F"./Data/{platform}/{model}/"
 CSV_num = 0
@@ -254,10 +330,10 @@ with open('./Data/metadata.json', 'r+') as f:
     json.dump(data, f, indent=4)
     f.truncate()
 
-with open(dir + f'votlages_{data_size}_{CSV_num}.csv', "w", newline='') as f:
+with open(dir + f'voltages_{data_size}_{CSV_num}.csv', "w", newline='') as f:
     writer = csv.writer(f)
-    writer.writerow(["Time (ns)", "Voltage (V)"])
-    for t, v in zip(time_array_ns, volts):
-        writer.writerow([t, v])
+    writer.writerow(["Time (ms)", "Voltage (V)"])
+    for t, v in zip(kept_times, kept_volts):
+        writer.writerow([f"{t:.6f}", f"{v:.6f}"])
 
 print(f"\nData saved to {dir}voltages_{data_size}_{CSV_num}.csv")
