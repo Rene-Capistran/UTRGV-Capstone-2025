@@ -1,28 +1,516 @@
 {
     "Arduino": {
         "UNO": {
-            "Captures_Small": 4,
-            "Captures_Medium": 5,
-            "Captures_Large": 0
+            "9600": {
+                "A": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 1,
+                    "Captures_Large": 0
+                },
+                "B": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "C": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "D": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "E": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "F": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "G": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "H": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "I": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "J": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "K": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "L": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                }
+            },
+            "115200": {
+                "A": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "B": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "C": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "D": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "E": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "F": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "G": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "H": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "I": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "J": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "K": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "L": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                }
+            },
+            "old": {}
         },
         "Nano": {
-            "Captures_Small": 0,
-            "Captures_Medium": 4,
-            "Captures_Large": 0
+            "9600": {
+                "A": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 2,
+                    "Captures_Large": 0
+                },
+                "B": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "C": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "D": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "E": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "F": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "G": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "H": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "I": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "J": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "K": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "L": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                }
+            },
+            "115200": {
+                "A": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "B": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "C": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "D": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "E": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "F": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "G": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "H": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "I": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "J": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "K": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "L": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                }
+            },
+            "old": {}
         }
     },
     "RPi": {
         "5B": {
-            "Captures_Small": 4,
-            "Captures_Medium": 0,
-            "Captures_Large": 0
+            "9600": {
+                "A": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "B": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "C": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "D": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "E": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "F": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "G": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "H": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "I": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "J": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "K": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "L": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                }
+            },
+            "115200": {
+                "A": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "B": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "C": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "D": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "E": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "F": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "G": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "H": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "I": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "J": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "K": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "L": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                }
+            },
+            "old": {}
         }
     },
     "ESP": {
         "32": {
-            "Captures_Small": 19,
-            "Captures_Medium": 6,
-            "Captures_Large": 0
+            "9600": {
+                "A": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "B": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "C": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "D": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "E": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "F": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "G": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "H": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "I": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "J": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "K": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "L": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                }
+            },
+            "115200": {
+                "A": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "B": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "C": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "D": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "E": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "F": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "G": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "H": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "I": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "J": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "K": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                },
+                "L": {
+                    "Captures_Small": 0,
+                    "Captures_Medium": 0,
+                    "Captures_Large": 0
+                }
+            },
+            "old": {}
         }
     }
 }

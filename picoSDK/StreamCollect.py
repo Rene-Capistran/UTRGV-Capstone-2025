@@ -12,7 +12,6 @@ import scipy.signal as signal
 
 BAUD = 9600
 
-
 ## Functions
 # get overview buffers
 CALLBACK = C_CALLBACK_FUNCTION_FACTORY(
@@ -115,6 +114,27 @@ while validation_loop:
         print("Invalid input")
         validation_loop = True
 
+validation_loop = True
+while validation_loop:
+    validation_loop = False
+    label = input("Device label (letter from A-L)\n> ")
+    if label.lower() not in ['a','b','c','d','e','f','g','h','i','j','k','l']:
+        print("Invalid input")
+        validation_loop = True
+    else:
+        label = label.upper()
+
+validation_loop = True
+while validation_loop:
+    validation_loop = False
+    baud_input = input(f"Baud rate\nA) 9600\n B) 115200\n> ")
+    if baud_input.lower() == 'a':
+        BAUD = 9600
+    elif baud_input.lower() == 'b':
+        BAUD = 115200
+    else:
+        print("Invalid input")
+        validation_loop = True
 
 if device_voltage == 5:
     voltage_threshold = 2.5
@@ -259,14 +279,7 @@ for byte in decoded_bytes:
 
 
 
-
-
-
-
-
-# Data Collection
-
-
+## Data Collection
 # determine idle level using the first 5% of samples
 idle_slice = max(1, int(0.05 * len(volts)))
 idle_mean = np.mean(volts[:idle_slice])
@@ -317,15 +330,14 @@ else:
 
 
 
-
-
-dir = F"./Data/{platform}/{model}/"
+# Save to CSV
+dir = f"./Data/Devices/{platform}/{model}/{BAUD}/{label}/"
 CSV_num = 0
 
 with open('./Data/metadata.json', 'r+') as f:
     data = json.load(f)
-    CSV_num = data[platform][model][f'Captures_{data_size}'] + 1
-    data[platform][model][f'Captures_{data_size}'] = CSV_num
+    CSV_num = data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] + 1
+    data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] = CSV_num
     f.seek(0)
     json.dump(data, f, indent=4)
     f.truncate()
@@ -334,6 +346,6 @@ with open(dir + f'voltages_{data_size}_{CSV_num}.csv', "w", newline='') as f:
     writer = csv.writer(f)
     writer.writerow(["Time (ms)", "Voltage (V)"])
     for t, v in zip(kept_times, kept_volts):
-        writer.writerow([f"{t:.6f}", f"{v:.6f}"])
+        writer.writerow([t, v])
 
 print(f"\nData saved to {dir}voltages_{data_size}_{CSV_num}.csv")
