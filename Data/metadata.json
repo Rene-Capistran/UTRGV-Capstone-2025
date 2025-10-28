@@ -3,8 +3,8 @@
         "UNO": {
             "9600": {
                 "A": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 1,
+                    "Captures_Small": 16,
+                    "Captures_Medium": 18,
                     "Captures_Large": 0
                 },
                 "B": {
@@ -259,8 +259,8 @@
         "5B": {
             "9600": {
                 "A": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 15,
+                    "Captures_Medium": 14,
                     "Captures_Large": 0
                 },
                 "B": {
@@ -403,8 +403,8 @@
                     "Captures_Large": 0
                 },
                 "D": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 15,
+                    "Captures_Medium": 14,
                     "Captures_Large": 0
                 },
                 "E": {

@@ -49,18 +49,41 @@ def adc_to_v(values, range_, bitness=16):
 # Dynamic device handling
 voltage_threshold = 0
 validation_loop = True
+
+last_device = "./Data/last.txt"
+last_dev_data = ''
+with open(last_device, 'r') as f:
+    data = f.readline()
+    last_dev_data = data.split(':')
+
+    print(f"Last device\n {last_dev_data[0]}, {last_dev_data[1]}, {last_dev_data[2]}, {last_dev_data[3]}, {last_dev_data[4]}\n")
+
+skipVal = False
 while validation_loop:
-    platform = input("Device platform type\nA) Arduino\nB) Raspberry Pi\nC) ESP\n0) Not listed\n> ")
-    if platform.lower() in ['a', 'b', 'c', '0']:
+    platform = input("Device platform type\nA) Arduino\nB) Raspberry Pi\nC) ESP\nZ) Last device\n0) Not listed\n> ")
+    platform = platform.lower()
+    if platform in ['a', 'b', 'c', 'z', '0']:
         validation_loop = False
+        if platform == 'z':
+            print('test')
+            skipVal = True
+            platform = last_dev_data[0]
+            model = last_dev_data[1]
+            device_voltage = float(last_dev_data[2])
+            data_size = last_dev_data[3]
+            BAUD = int(last_dev_data[4])
+            label = last_dev_data[5]
+
     else:
         print("Invalid input")
 
-
-validation_loop = True
+if skipVal:
+    validation_loop = False
+else:
+    validation_loop = True 
 while validation_loop:
     validation_loop = False
-    if platform.lower() == 'a':
+    if platform == 'a':
         platform = 'Arduino'
         model = input("Device model\nA) Nano\nB) UNO\n0) Not listed\n> ")
         if model.lower() not in ['a', 'b', '0']:
@@ -73,7 +96,7 @@ while validation_loop:
             model = 'UNO'
             device_voltage = 5
 
-    elif platform.lower() == 'b':
+    elif platform == 'b':
         platform = 'RPi'
         model = input("A) 5B\n0) Not listed\n> ")
         if model.lower() not in ['a', '0']:
@@ -82,7 +105,7 @@ while validation_loop:
         elif model.lower() == 'a':
             model = '5B'
             device_voltage = 3.3
-    elif platform.lower() == 'c':
+    elif platform == 'c':
         platform = 'ESP'
         model = input("A) 32\n0) Not listed\n> ")
         if model.lower() not in ['a', '0']:
@@ -97,7 +120,20 @@ while validation_loop:
         print("Invalid input")
         validation_loop = True
 
-validation_loop = True
+
+if skipVal:
+    print('test')
+    print(data_size)
+    validation_loop = False 
+    if data_size == 'Small':
+        capture_time = 250_000_000  
+    if data_size == 'Medium':
+        capture_time = 500_000_000  
+    if data_size == 'Large':
+        capture_time = 1_000_000_000  
+else:
+    validation_loop = True 
+
 while validation_loop:
     validation_loop = False
     data_size = input("Data size\nA) Small\nB) Medium\nc) Large\n> ")
@@ -114,7 +150,10 @@ while validation_loop:
         print("Invalid input")
         validation_loop = True
 
-validation_loop = True
+if skipVal:
+    validation_loop = False   
+else:
+    validation_loop = True 
 while validation_loop:
     validation_loop = False
     label = input("Device label (letter from A-L)\n> ")
@@ -124,7 +163,10 @@ while validation_loop:
     else:
         label = label.upper()
 
-validation_loop = True
+if skipVal:
+    validation_loop = False  
+else:
+    validation_loop = True 
 while validation_loop:
     validation_loop = False
     baud_input = input(f"Baud rate\nA) 9600\n B) 115200\n> ")
@@ -135,6 +177,7 @@ while validation_loop:
     else:
         print("Invalid input")
         validation_loop = True
+
 
 if device_voltage == 5:
     voltage_threshold = 2.5
@@ -349,3 +392,7 @@ with open(dir + f'voltages_{data_size}_{CSV_num}.csv', "w", newline='') as f:
         writer.writerow([t, v])
 
 print(f"\nData saved to {dir}voltages_{data_size}_{CSV_num}.csv")
+
+with open(last_device, 'w') as f:
+    lastDev = f"{platform}:{model}:{device_voltage}:{data_size}:{str(BAUD)}:{label}"
+    f.write(lastDev)

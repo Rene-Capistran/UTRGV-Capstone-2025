@@ -25,8 +25,8 @@ void loop() {
   
   // Send message over UART
   counter ++;
-  mySerial.println(String("Hello, World!"));
-  // mySerial.println(String("The quick brown fox jumps over the lazy dog."));
+  // mySerial.println(String("Hello, World!"));
+  mySerial.println(String("The quick brown fox jumps over the lazy dog."));
   
   Serial.println(counter + "Message sent.");
   
