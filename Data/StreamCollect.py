@@ -46,11 +46,13 @@ def adc_to_v(values, range_, bitness=16):
     return result
 
 
+
+
 # Dynamic device handling
 voltage_threshold = 0
 validation_loop = True
 
-last_device = "./Data/last.txt"
+last_device = "./last.txt"
 last_dev_data = ''
 with open(last_device, 'r') as f:
     data = f.readline()
@@ -374,10 +376,10 @@ else:
 
 
 # Save to CSV
-dir = f"./Data/Devices/{platform}/{model}/{BAUD}/{label}/"
+dir = f"./Devices/{platform}/{model}/{BAUD}/{label}/"
 CSV_num = 0
 
-with open('./Data/metadata.json', 'r+') as f:
+with open('./metadata.json', 'r+') as f:
     data = json.load(f)
     CSV_num = data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] + 1
     data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] = CSV_num

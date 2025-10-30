@@ -1,1 +1,1 @@
-Arduino:UNO:5.0:Small:9600:A
+Arduino:Nano:5:Medium:9600:A
