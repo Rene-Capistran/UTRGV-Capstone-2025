@@ -4,17 +4,17 @@
             "9600": {
                 "A": {
                     "Captures_Small": 16,
-                    "Captures_Medium": 18,
+                    "Captures_Medium": 25,
                     "Captures_Large": 0
                 },
                 "B": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 15,
+                    "Captures_Medium": 15,
                     "Captures_Large": 0
                 },
                 "C": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 15,
+                    "Captures_Medium": 15,
                     "Captures_Large": 0
                 },
                 "D": {
@@ -388,18 +388,18 @@
         "32": {
             "9600": {
                 "A": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 15,
+                    "Captures_Medium": 16,
                     "Captures_Large": 0
                 },
                 "B": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 15,
+                    "Captures_Medium": 16,
                     "Captures_Large": 0
                 },
                 "C": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 15,
+                    "Captures_Medium": 15,
                     "Captures_Large": 0
                 },
                 "D": {
@@ -408,13 +408,13 @@
                     "Captures_Large": 0
                 },
                 "E": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 16,
+                    "Captures_Medium": 19,
                     "Captures_Large": 0
                 },
                 "F": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
+                    "Captures_Small": 15,
+                    "Captures_Medium": 18,
                     "Captures_Large": 0
                 },
                 "G": {

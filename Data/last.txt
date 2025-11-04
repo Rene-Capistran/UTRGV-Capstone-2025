@@ -1,1 +1,1 @@
-Arduino:Nano:5:Medium:9600:A
+ESP:32:3.3:Medium:9600:C
