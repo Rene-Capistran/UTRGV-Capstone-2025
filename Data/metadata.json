@@ -4,7 +4,7 @@
             "9600": {
                 "A": {
                     "Captures_Small": 16,
-                    "Captures_Medium": 25,
+                    "Captures_Medium": 19,
                     "Captures_Large": 0
                 },
                 "B": {
@@ -389,11 +389,11 @@
             "9600": {
                 "A": {
                     "Captures_Small": 15,
-                    "Captures_Medium": 16,
+                    "Captures_Medium": 15,
                     "Captures_Large": 0
                 },
                 "B": {
-                    "Captures_Small": 15,
+                    "Captures_Small": 14,
                     "Captures_Medium": 16,
                     "Captures_Large": 0
                 },
@@ -409,7 +409,7 @@
                 },
                 "E": {
                     "Captures_Small": 16,
-                    "Captures_Medium": 19,
+                    "Captures_Medium": 15,
                     "Captures_Large": 0
                 },
                 "F": {

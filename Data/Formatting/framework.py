@@ -12,7 +12,7 @@ import os
 from utils import Metrics
 
 class USARTConfig:
-    def __init__(self, data_bits:int, parity_type:int=0, stop_bits:int=1, baud_rate:int=9600, vih:int=5):
+    def __init__(self, data_bits:int, parity_type:int=0, stop_bits:int=1, baud_rate:int=9600, vih=5.0):
         # Parity Type: 0 = None; 1 = Even; -1 = Odd
         parity = {0: 'None', 1: 'Even', -1: 'Odd'}
         self.parity_bit = parity[parity_type]
@@ -47,11 +47,12 @@ class USARTConfig:
         return str(txt)
 
 class BoardExperiment:
-    def __init__(self, path, label, usart_config:USARTConfig):
+    def __init__(self, path, label, msg_size, usart_config:USARTConfig):
         # TODO - infer usart_config?
         self.label = label
         self.config = usart_config
         self.exp_path = path
+        self.msg_size = msg_size
         self.ss = [f for f in os.listdir(path)]
 #        print("{}\n\n{}".format(self.config, self))
         
@@ -73,7 +74,7 @@ class BoardExperiment:
     def analyze_waveform(self, ss_no=1, display=False):
         self.read_data(ss_no)
         # TODO - display waveform and statistics
-        v_th = 2   
+        v_th = self.config.device_voltage * 0.5  # Changed threshold to half of device voltage
         # TODO - fix method for tr and tf
         data = { 'ones':[], 'ones_index':[], 'zeros':[], 'zeros_index':[], 'tr':[], 'tf':[] }
         transition = True
@@ -81,14 +82,14 @@ class BoardExperiment:
             if s <= v_th:
                 data['zeros'].append(s)
                 data['zeros_index'].append(i)
-                if transition:
+                if transition and i > 0: # Added i>0 because i kept getting an out-of-bounds error
                     # tr are in microseconds
                     data['tr'].append((self.data['Time'][i] - self.data['Time'][i-1])*1000)
                     transition = False
             else:
                 data['ones'].append(s)
                 data['ones_index'].append(i)
-                if not transition:
+                if not transition and i > 0:
                     # tf are in microseconds
                     data['tf'].append((self.data['Time'][i] - self.data['Time'][i-1])*1000)
                     transition = True
@@ -136,6 +137,9 @@ class BoardExperiment:
         # Cosine similarity w.r.t. 2.5V (half os signal)
         sample['cos_one'] = metrics_half_ones['cos']
         sample['cos_zero'] = metrics_half_zeros['cos']
+
+        sample['msg_size'] = self.msg_size
+
         # TODO - fix tr/tf measurment 
 #        sample['ave_tr'] = np.mean(self.tmp['tr'])
 #        sample['ave_tf'] = np.mean(self.tmp['tf'])
