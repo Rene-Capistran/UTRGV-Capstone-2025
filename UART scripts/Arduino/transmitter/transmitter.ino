@@ -13,8 +13,14 @@ void setup() {
 }
 
 void loop() {
+  // Small
   // uartTransmitter.println("Hello, world!");
-  uartTransmitter.println("The quick brown fox jumps over the lazy dog.");
+
+  // Medium
+  // uartTransmitter.println("The quick brown fox jumps over the lazy dog.");
+
+  // Large
+  // uartTransmitter.println("In telecommunication and data transmission, serial communication is the process of sending data one bit at a time, sequentially, over a communication channel or computer bus.");
   delay(200);
 }
 

@@ -12,7 +12,7 @@ import os
 from utils import Metrics
 
 class USARTConfig:
-    def __init__(self, data_bits:int, parity_type:int=0, stop_bits:int=1, baud_rate:int=9600, vih=5.0):
+    def __init__(self, data_bits:int, parity_type:int=0, stop_bits:int=1, baud_rate:int=9600, vih:float=5.0):
         # Parity Type: 0 = None; 1 = Even; -1 = Odd
         parity = {0: 'None', 1: 'Even', -1: 'Odd'}
         self.parity_bit = parity[parity_type]
@@ -47,12 +47,13 @@ class USARTConfig:
         return str(txt)
 
 class BoardExperiment:
-    def __init__(self, path, label, msg_size, usart_config:USARTConfig):
+    def __init__(self, path, label, msg_size, char_len, usart_config:USARTConfig):
         # TODO - infer usart_config?
         self.label = label
         self.config = usart_config
         self.exp_path = path
         self.msg_size = msg_size
+        self.char_len = char_len
         self.ss = [f for f in os.listdir(path)]
 #        print("{}\n\n{}".format(self.config, self))
         
@@ -139,6 +140,7 @@ class BoardExperiment:
         sample['cos_zero'] = metrics_half_zeros['cos']
 
         sample['msg_size'] = self.msg_size
+        sample['char_len'] = self.char_len
 
         # TODO - fix tr/tf measurment 
 #        sample['ave_tr'] = np.mean(self.tmp['tr'])

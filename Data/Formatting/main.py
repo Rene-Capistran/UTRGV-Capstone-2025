@@ -27,7 +27,7 @@ models_5v = ['uno', 'nano']
 for BAUD in baud_rates:
     print(f"\n=== Processing BAUD rate: {BAUD} ===")
     
-    config = USARTConfig(8, 0, 1, baud_rate=BAUD)
+    
     
     for device in devDir.iterdir():
         if not device.is_dir():
@@ -45,6 +45,7 @@ for BAUD in baud_rates:
                 volts = 5.0
             else:
                 volts = 3.3
+            config = USARTConfig(8, 0, 1, baud_rate=BAUD, vih=volts)
 
             if board not in boards:
                 boards.append(board)
@@ -53,7 +54,13 @@ for BAUD in baud_rates:
             baud_dir = model_dir / str(BAUD)           
           
             datasets = [] 
-            for size in sizes:            
+            for size in sizes:
+                if size == 'small':
+                    char_len = 13
+                elif size == 'medium':
+                    char_len = 44
+                elif size == 'large':
+                    char_len = 174         
                 for label_dir in baud_dir.iterdir():
                     if not label_dir.is_dir():
                         continue
@@ -75,7 +82,7 @@ for BAUD in baud_rates:
                                     df.to_csv(temp_file, index=False, encoding='utf-8')
                                     
                                     # Process data
-                                    exp = BoardExperiment(str(temp_dir), label=label, usart_config=config, msg_size=size)
+                                    exp = BoardExperiment(str(temp_dir), label=label, usart_config=config, msg_size=size, char_len=char_len)
                                     dataset = exp.create_dataset()
                                     datasets.append(dataset)
                                     

@@ -25,8 +25,15 @@ void loop() {
   
   // Send message over UART
   counter ++;
+
+  // Small
   // mySerial.println(String("Hello, World!"));
-  mySerial.println(String("The quick brown fox jumps over the lazy dog."));
+
+  // Medium
+  // mySerial.println(String("The quick brown fox jumps over the lazy dog."));
+
+  // Large
+  // mySerial.println(string("In telecommunication and data transmission, serial communication is the process of sending data one bit at a time, sequentially, over a communication channel or computer bus."));
   
   Serial.println(counter + "Message sent.");
   

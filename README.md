@@ -12,6 +12,6 @@ cd picotech
 pip install ./
 
 
-## Documentation
+## External Documentation
 PicoSDK Docs:
 https://www.picotech.com/download/manuals/picoscope-2000-series-programmers-guide.pdf
