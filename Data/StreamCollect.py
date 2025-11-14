@@ -12,6 +12,11 @@ import scipy.signal as signal
 import os
 
 loopCount = 0
+
+multi_cap = input("Auto capture?\nA) 0\nB) 15\n> ")
+if multi_cap.lower() == 'a':
+    multi_cap = 0
+
 while True:
     loopCount += 1
 
@@ -57,7 +62,7 @@ while True:
     voltage_threshold = 0
     validation_loop = True
 
-    last_device = "./Data/last.txt"
+    last_device = "last.txt"
     last_dev_data = ''
     with open(last_device, 'r') as f:
         data = f.readline()
@@ -66,6 +71,16 @@ while True:
         print(f"Last device\n {last_dev_data[0]} {last_dev_data[1]} ({last_dev_data[5]}),  {last_dev_data[3]}:{last_dev_data[4]} {last_dev_data[2]}V\n")
 
     skipVal = False
+    if multi_cap and loopCount > 1 and loopCount <= 15:
+        skipVal = True
+        validation_loop = False
+        platform = last_dev_data[0]
+        model = last_dev_data[1]
+        device_voltage = float(last_dev_data[2])
+        data_size = last_dev_data[3]
+        BAUD = int(last_dev_data[4])
+        label = last_dev_data[5]
+    
     while validation_loop:
         platform = input("Device platform type\nA) Arduino\nB) Raspberry Pi\nC) ESP\nZ) Last device\n0) Not listed\n> ")
         platform = platform.lower()
@@ -258,7 +273,7 @@ while True:
 
             plt.show()
 
-            dir = f"./Data/Devices/{platform}/{model}/{BAUD}/{label}/"
+            dir = f"Devices/{platform}/{model}/{BAUD}/{label}/"
             if not os.path.isfile(dir + f'template_{data_size}.png'):
                 print('saving template figure')
                 fig.savefig(dir + f'template_{data_size}.png')
@@ -385,10 +400,10 @@ while True:
 
 
     # Save to CSV
-    dir = f"./Data/Devices/{platform}/{model}/{BAUD}/{label}/"
+    dir = f"Devices/{platform}/{model}/{BAUD}/{label}/"
     CSV_num = 0
 
-    with open('./Data/metadata.json', 'r+') as f:
+    with open('metadata.json', 'r+') as f:
         data = json.load(f)
         CSV_num = data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] + 1
         data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] = CSV_num
