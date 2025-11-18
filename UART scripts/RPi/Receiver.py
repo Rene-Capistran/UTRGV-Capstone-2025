@@ -1,12 +1,12 @@
-# receiver.py
 import serial
+import time 
+SERIAL_PORT = '/dev/ttyAMA0'
+BAUD_RATE = 9600
 
-PORT = "/dev/serial0"
-BAUD = 115200
+print("Listening for UART data...")
 
-with serial.Serial(PORT, BAUD, timeout=1) as ser:
-    print("Listening on", PORT, "at", BAUD, "baud...")
+with serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=2) as ser:
     while True:
-        line = ser.readline()
-        if line:
-            print("Received:", line.decode(errors="replace").strip())
+        data = ser.readline()
+        if data:
+            print("Received:". data.decode('utf-8', errors='replace'))
