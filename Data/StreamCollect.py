@@ -12,11 +12,16 @@ import scipy.signal as signal
 import os
 
 loopCount = 0
-
-multi_cap = input("Auto capture?\nA) 0\nB) 15\n> ")
+cap_count = 75
+multi_cap = input("Auto capture?\nA) no\nB) 15\nC) 90\nD) Custom\n> ")
 if multi_cap.lower() == 'a':
     multi_cap = 0
-
+elif multi_cap.lower() == 'b':
+    cap_count = 15
+elif multi_cap.lower == 'c':
+    cap_count = 90
+elif multi_cap.lower() == 'd':
+    cap_count = int(input("Custom amount\n> "))
 while True:
     loopCount += 1
 
@@ -71,7 +76,7 @@ while True:
         print(f"Last device\n {last_dev_data[0]} {last_dev_data[1]} ({last_dev_data[5]}),  {last_dev_data[3]}:{last_dev_data[4]} {last_dev_data[2]}V\n")
 
     skipVal = False
-    if multi_cap and loopCount > 1 and loopCount <= 15:
+    if multi_cap and loopCount > 1 and loopCount <= cap_count:
         skipVal = True
         validation_loop = False
         platform = last_dev_data[0]
