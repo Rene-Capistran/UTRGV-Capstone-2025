@@ -363,7 +363,7 @@ while True:
 
     logic = np.asarray(logic_levels, dtype=int)
 
-    # find indexes where signal is active (not idle)
+    # find indexes where signal is active
     active_idxs = np.where(logic == active_level)[0]
 
     keep = np.zeros(len(volts), dtype=bool)

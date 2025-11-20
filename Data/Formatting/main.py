@@ -22,6 +22,7 @@ boards = []
 models_3v = ['32', '5b']
 models_5v = ['uno', 'nano']
 
+skip = ['uno', '32']
 
 
 for BAUD in baud_rates:
@@ -38,6 +39,9 @@ for BAUD in baud_rates:
             if not model_dir.is_dir():
                 continue
             model = model_dir.name
+            if model.lower() in skip:   #skip chosen directories
+                print(f'\n=== Skipping {model} ===')
+                continue
             board = f"{platform}_{model}"
 
             #Voltage by model
