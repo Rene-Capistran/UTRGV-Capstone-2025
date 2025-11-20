@@ -12,16 +12,17 @@ import scipy.signal as signal
 import os
 
 loopCount = 0
-cap_count = 75
+cap_count = ''
 multi_cap = input("Auto capture?\nA) no\nB) 15\nC) 90\nD) Custom\n> ")
 if multi_cap.lower() == 'a':
-    multi_cap = 0
+    cap_count = 0
 elif multi_cap.lower() == 'b':
     cap_count = 15
-elif multi_cap.lower == 'c':
+elif multi_cap.lower() == 'c':
     cap_count = 90
 elif multi_cap.lower() == 'd':
     cap_count = int(input("Custom amount\n> "))
+
 while True:
     loopCount += 1
 

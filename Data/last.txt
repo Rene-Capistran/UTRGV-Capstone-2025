@@ -1,1 +1,1 @@
-RPi:5B:3.3:Large:9600:B
+Arduino:Nano:5.0:Large:9600:B

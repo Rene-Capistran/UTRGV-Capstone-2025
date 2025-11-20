@@ -130,14 +130,14 @@
         "Nano": {
             "9600": {
                 "A": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
-                    "Captures_Large": 0
+                    "Captures_Small": 90,
+                    "Captures_Medium": 90,
+                    "Captures_Large": 90
                 },
                 "B": {
-                    "Captures_Small": 0,
-                    "Captures_Medium": 0,
-                    "Captures_Large": 0
+                    "Captures_Small": 90,
+                    "Captures_Medium": 90,
+                    "Captures_Large": 90
                 },
                 "C": {
                     "Captures_Small": 0,
