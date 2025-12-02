@@ -13,6 +13,7 @@ import os
 
 loopCount = 0
 cap_count = ''
+protocol = ''
 multi_cap = input("Auto capture?\nA) no\nB) 15\nC) 90\nD) Custom\n> ")
 if multi_cap.lower() == 'a':
     cap_count = 0
@@ -40,13 +41,9 @@ while True:
         c_uint32
     )
 
-    adc_values = []
-
-
-    def get_overview_buffers(buffers, _overflow, _triggered_at, _triggered, _auto_stop, n_values):
-        adc_values.extend(buffers[0][0:n_values])
-
-    callback = CALLBACK(get_overview_buffers)
+    # adc_values = [] old
+    adc_values_a = []  # Channel A (SDA for I2C, TX/RX for UART)
+    adc_values_b = []  # Channel B (SCL for I2C)
 
     # convert ADC to V
     def adc_to_v(values, range_, bitness=16):
@@ -61,20 +58,25 @@ while True:
             result.append(v)
         return result
 
-
-
-
     # Dynamic device handling
     voltage_threshold = 0
     validation_loop = True
 
-    last_run = "last.txt"
+    last_run = "Data\\last.txt"
     last_dev_data = ''
     with open(last_run, 'r') as f:
         data = f.readline()
         last_dev_data = data.split(':')
 
-        print(f"Last run\n {last_dev_data[0]} {last_dev_data[1]} ({last_dev_data[5]}),  {last_dev_data[3]}:{last_dev_data[4]} {last_dev_data[2]}V\n")
+        # Handle old format (without protocol) and new format (with protocol)
+        if len(last_dev_data) >= 7:
+            if len(last_dev_data) > 6:
+                protocol_display = last_dev_data[6]
+            else:
+                protocol_display = 'UART'
+            print(f"Last run\n {last_dev_data[0]} {last_dev_data[1]} ({last_dev_data[5]}), {protocol_display}, {last_dev_data[3]}:{last_dev_data[4]} {last_dev_data[2]}V\n")
+        else:
+            print(f"Last run\n {last_dev_data[0]} {last_dev_data[1]} ({last_dev_data[5]}),  {last_dev_data[3]}:{last_dev_data[4]} {last_dev_data[2]}V\n")
 
     skipVal = False
     if multi_cap and loopCount > 1 and loopCount <= cap_count:
@@ -86,19 +88,8 @@ while True:
         data_size = last_dev_data[3]
         BAUD = int(last_dev_data[4])
         label = last_dev_data[5]
+        protocol = last_dev_data[6] if len(last_dev_data) > 6 else 'UART'
     
-
-    while validation_loop:
-        protocol = input("Protocol type\nA) UART\nB) I2C\nC) SPI\n> ")
-        protocol = protocol.lower()
-        validation_loop = False
-        if protocol not in ['a', 'b', 'c']:
-            print("Invalid input")
-            validation_loop = True
-        if protocol == 'c':
-            print("SPI not supported yet")
-            validation_loop = True
-            
     while validation_loop:
         platform = input("Device platform type\nA) Arduino\nB) Raspberry Pi\nC) ESP\nZ) Last device\n0) Not listed\n> ")
         platform = platform.lower()
@@ -112,9 +103,11 @@ while True:
                 data_size = last_dev_data[3]
                 BAUD = int(last_dev_data[4])
                 label = last_dev_data[5]
+                protocol = last_dev_data[6] if len(last_dev_data) > 6 else 'UART'
 
         else:
             print("Invalid input")
+            validation_loop = True
 
     if skipVal:
         validation_loop = False
@@ -124,7 +117,7 @@ while True:
         validation_loop = False
         if platform == 'a':
             platform = 'Arduino'
-            model = input("Device model\nA) Nano\nB) UNO\n0) Not listed\n> ")
+            model = input("Device model\nA) Nano\nB) Mega\n0) Not listed\n> ")
             if model.lower() not in ['a', 'b', '0']:
                 print("Invalid input")
                 validation_loop = True
@@ -132,7 +125,7 @@ while True:
                 model = 'Nano'
                 device_voltage = 5
             elif model.lower() == 'b':
-                model = 'UNO'
+                model = 'Mega'
                 device_voltage = 5
 
         elif platform == 'b':
@@ -206,16 +199,33 @@ while True:
         validation_loop = True 
     while validation_loop:
         validation_loop = False
-        baud_input = input(f"Baud rate\nA) 9600\nB) 115200\n> ")
-        if baud_input.lower() == 'a':
-            BAUD = 9600
-        elif baud_input.lower() == 'b':
-            BAUD = 115200
+        protocol_input = input(f"Communication Protocol\nA) UART\nB) I2C\n> ")
+        if protocol_input.lower() == 'a':
+            protocol = 'UART'
+        elif protocol_input.lower() == 'b':
+            protocol = 'I2C'
         else:
             print("Invalid input")
             validation_loop = True
 
-
+    if skipVal:
+        validation_loop = False  
+    else:
+        validation_loop = True 
+    
+    if protocol == 'UART':
+        while validation_loop:
+            validation_loop = False
+            baud_input = input(f"Baud rate\nA) 9600\nB) 115200\n> ")
+            if baud_input.lower() == 'a':
+                BAUD = 9600
+            elif baud_input.lower() == 'b':
+                BAUD = 115200
+            else:
+                print("Invalid input")
+                validation_loop = True
+    else:
+        BAUD = 100000  
     if device_voltage == 5:
         voltage_threshold = 2.5
         high_threshold = 3.5
@@ -228,11 +238,16 @@ while True:
         print("Unknown device voltage, using default threshold of 2.5V")
         voltage_threshold = 2.5
 
+    def get_overview_buffers(buffers, _overflow, _triggered_at, _triggered, _auto_stop, n_values):
+        adc_values_a.extend(buffers[0][0:n_values])
+        if protocol == 'I2C':
+            adc_values_b.extend(buffers[1][0:n_values])
+    callback = CALLBACK(get_overview_buffers)
 
     # Initialise PicoScope
     with ps2000.open_unit() as device:
         print('Device info: {}'.format(device.info))
-
+        # Channel A
         res = ps2000.ps2000_set_channel(
             device.handle,
             picoEnum.PICO_CHANNEL['PICO_CHANNEL_A'],
@@ -241,6 +256,28 @@ while True:
             ps2000.PS2000_VOLTAGE_RANGE['PS2000_5V'],
         )
         assert_pico2000_ok(res)
+
+
+        # Channel B
+        if protocol == 'I2C':
+            res = ps2000.ps2000_set_channel(
+                device.handle,
+                picoEnum.PICO_CHANNEL['PICO_CHANNEL_B'],
+                True,
+                picoEnum.PICO_COUPLING['PICO_DC'],
+                ps2000.PS2000_VOLTAGE_RANGE['PS2000_5V'],
+            )
+            assert_pico2000_ok(res)
+        else:
+            # Disable channel B for UART
+            res = ps2000.ps2000_set_channel(
+                device.handle,
+                picoEnum.PICO_CHANNEL['PICO_CHANNEL_B'],
+                False,
+                picoEnum.PICO_COUPLING['PICO_DC'],
+                ps2000.PS2000_VOLTAGE_RANGE['PS2000_5V'],
+            )
+            assert_pico2000_ok(res)
 
         sample_interval = 1500
         time_units = 2
@@ -274,97 +311,131 @@ while True:
 
         # Gathering raw data for CSV
         sample_period_s = float(sample_interval) * 1e-9
-        time_array_s = np.arange(len(adc_values), dtype=np.float64) * sample_period_s
+        time_array_s = np.arange(len(adc_values_a), dtype=np.float64) * sample_period_s
         time_array_ms = time_array_s * 1e3
 
         range_index = ps2000.PS2000_VOLTAGE_RANGE['PS2000_5V']
-        volts = np.array(adc_to_v(adc_values, range_index), dtype=np.float64)
+        volts_a = np.array(adc_to_v(adc_values_a, range_index), dtype=np.float64)
+        
+        if protocol == 'I2C':
+            volts_b = np.array(adc_to_v(adc_values_b, range_index), dtype=np.float64)
+        
         samples_per_bit = max(1, int(1.0 / (BAUD * sample_period_s)))
 
         if loopCount <= 1:
-            fig, ax = plt.subplots()
+            if protocol == 'UART':
+                fig, ax = plt.subplots()
 
-            ax.set_xlabel('time/ms')
-            ax.set_ylabel('voltage/V')
-            ax.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts)), volts)
-            ax.set_title(f'{platform} {model} ({label}), {data_size}:{BAUD}')
+                ax.set_xlabel('time/ms')
+                ax.set_ylabel('voltage/V')
+                ax.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts_a)), volts_a)
+                ax.set_title(f'{platform} {model} ({label}), {protocol}, {data_size}:{BAUD}')
 
-            plt.show()
+                plt.show()
 
-            dir = f"Devices/{platform}/{model}/{BAUD}/{label}/"
-            if not os.path.isfile(dir + f'template_{data_size}.png'):
-                print('saving template figure')
-                fig.savefig(dir + f'template_{data_size}.png')
+                dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
+                if not os.path.isfile(dir + f'template_{data_size}.png'):
+                    print('saving template figure')
+                    fig.savefig(dir + f'template_{data_size}.png')
+            elif protocol == 'I2C':
+                fig, ax = plt.subplots()
 
+                ax.set_xlabel('time/ms')
+                ax.set_ylabel('voltage/V')
+                ax.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts_a)), volts_a, label='SDA (Channel A)')
+                ax.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts_b)), volts_b, label='SCL (Channel B)')
+                ax.set_title(f'{platform} {model} ({label}), {protocol}, {data_size}:{BAUD}')
+                ax.legend()
+
+                plt.show()
+                if protocol == 'uart':
+                    dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
+                else:
+                    dir = f"Data/Devices/{protocol}/{platform}/{model}/{label}/"
+                if not os.path.isfile(dir + f'template_{data_size}.png'):
+                    print('saving template figure')
+                    fig.savefig(dir + f'template_{data_size}.png')
 
 
     # Decoding bytes
     print("\nDecoding bytes...")
-    logic_levels = []
-    for v in volts:
-        if v > voltage_threshold:
-            logic_levels.append(1)
-        else:
-            logic_levels.append(0)
 
-    sample_period = (end_time - start_time) * 1e-9 / len(volts)  
+    if protocol == 'UART':
+        logic_levels = []
+        for v in volts_a:
+            if v > voltage_threshold:
+                logic_levels.append(1)
+            else:
+                logic_levels.append(0)
 
-    # Calculate samples per bit
-    samples_per_bit = int(1 / (BAUD * sample_period))
+        sample_period = (end_time - start_time) * 1e-9 / len(volts_a)  
 
-    # Find start bits (falling edge: 1 -> 0)
-    bits_per_byte = 10  # 1 start, 8 data, 1 stop
-    frame_length = bits_per_byte * samples_per_bit
+        # Calculate samples per bit
+        samples_per_bit = int(1 / (BAUD * sample_period))
 
-    # Filter
-    volts_filtered = signal.medfilt(volts, kernel_size=5)
+        # Find start bits (falling edge: 1 -> 0)
+        bits_per_byte = 10  # 1 start, 8 data, 1 stop
+        frame_length = bits_per_byte * samples_per_bit
 
-    # Hysteresis thresholding
-    logic_levels = []
-    state = 1 if volts_filtered[0] > high_threshold else 0
-    for v in volts_filtered:
-        if state == 0 and v > high_threshold:
-            state = 1
-        elif state == 1 and v < low_threshold:
-            state = 0
-        logic_levels.append(state)
+        # Filter
+        volts_filtered = signal.medfilt(volts_a, kernel_size=5)
 
-    # Start bit detection
-    min_idle_samples = int(0.7 * samples_per_bit)
-    decoded_bytes = []
-    i = min_idle_samples
-    byte_timings = []
-    while i < len(logic_levels):
-        if (
-            all(logic_levels[i - min_idle_samples : i])
-            and logic_levels[i - 1] == 1
-            and logic_levels[i] == 0
-        ):
-            bits = []
-            for bit in range(1, bits_per_byte):
-                sample_idx = int(i + (bit - 0.5) * samples_per_bit)
-                if sample_idx < len(logic_levels):
-                    bits.append(logic_levels[sample_idx])
-            if len(bits) >= 9:
-                data_bits = bits[1:9]
-                byte = 0
-                for j, b in enumerate(data_bits):
-                    byte |= (b << j)
-                decoded_bytes.append(byte)
-                byte_timings.append(i * sample_period) # Time the byte was received
-            i += frame_length
-        else:
-            i += 1
+        # Hysteresis thresholding
+        logic_levels = []
+        state = 1 if volts_filtered[0] > high_threshold else 0
+        for v in volts_filtered:
+            if state == 0 and v > high_threshold:
+                state = 1
+            elif state == 1 and v < low_threshold:
+                state = 0
+            logic_levels.append(state)
 
-    print("Decoded bytes:", decoded_bytes)
+        # Start bit detection
+        min_idle_samples = int(0.7 * samples_per_bit)
+        decoded_bytes = []
+        i = min_idle_samples
+        byte_timings = []
+        while i < len(logic_levels):
+            if (
+                all(logic_levels[i - min_idle_samples : i])
+                and logic_levels[i - 1] == 1
+                and logic_levels[i] == 0
+            ):
+                bits = []
+                for bit in range(1, bits_per_byte):
+                    sample_idx = int(i + (bit - 0.5) * samples_per_bit)
+                    if sample_idx < len(logic_levels):
+                        bits.append(logic_levels[sample_idx])
+                if len(bits) >= 9:
+                    data_bits = bits[1:9]
+                    byte = 0
+                    for j, b in enumerate(data_bits):
+                        byte |= (b << j)
+                    decoded_bytes.append(byte)
+                    byte_timings.append(i * sample_period) # Time the byte was received
+                i += frame_length
+            else:
+                i += 1
 
-    for byte in decoded_bytes:
-        if 32 <= byte <= 126:
-            print(chr(byte), end='')
-        else:
-            print('.', end='')
+        print("Decoded bytes:", decoded_bytes)
 
+        for byte in decoded_bytes:
+            if 32 <= byte <= 126:
+                print(chr(byte), end='')
+            else:
+                print('.', end='')
+        volts = volts_a
+    elif protocol == 'I2C':
+        logic_levels = []
+        for v in volts_a:
+            if v > voltage_threshold:
+                logic_levels.append(1)
+            else:
+                logic_levels.append(0)
+                ## TODO: I2C decoding
+        volts = volts_a
 
+        
 
     ## Data Collection
     # determine idle level using the first 5% of samples
@@ -416,18 +487,22 @@ while True:
         kept_times = kept_times - kept_times[0]
 
 
-
     # Save to CSV
-    dir = f"Devices/{platform}/{model}/{BAUD}/{label}/"
+    if protocol == 'UART':
+        dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
+    else:
+        dir = f"Data/Devices/{protocol}/{platform}/{model}/{label}/"
     CSV_num = 0
 
-    with open('metadata.json', 'r+') as f:
-        data = json.load(f)
-        CSV_num = data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] + 1
-        data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] = CSV_num
-        f.seek(0)
-        json.dump(data, f, indent=4)
-        f.truncate()
+    if protocol == 'UART':
+        with open('metadata.json', 'r+') as f:
+            data = json.load(f)
+            CSV_num = data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] + 1
+            data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] = CSV_num
+            f.seek(0)
+            json.dump(data, f, indent=4)
+            f.truncate()
+
 
     with open(dir + f'voltages_{data_size}_{CSV_num}.csv', "w", newline='') as f:
         writer = csv.writer(f)
@@ -435,8 +510,9 @@ while True:
         for t, v in zip(kept_times, kept_volts):
             writer.writerow([t, v])
 
+    
     print(f"\nData saved to {dir}voltages_{data_size}_{CSV_num}.csv")
 
     with open(last_run, 'w') as f:
-        lastDev = f"{platform}:{model}:{device_voltage}:{data_size}:{str(BAUD)}:{label}"
+        lastDev = f"{platform}:{model}:{device_voltage}:{data_size}:{str(BAUD)}:{label}:{protocol}"
         f.write(lastDev)

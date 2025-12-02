@@ -39,7 +39,7 @@ for BAUD in baud_rates:
             if not model_dir.is_dir():
                 continue
             model = model_dir.name
-            if model.lower() in skip:   #skip chosen directories
+            if model.lower() in skip:   #skip specified models
                 print(f'\n=== Skipping {model} ===')
                 continue
             board = f"{platform}_{model}"

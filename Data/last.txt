@@ -1,1 +1,1 @@
-Arduino:Nano:5.0:Large:9600:B
+ESP:32:3.3:Large:100000:A:I2C

@@ -1,6 +1,6 @@
 {
     "Arduino": {
-        "UNO": {
+        "Mega": {
             "9600": {
                 "A": {
                     "Captures_Small": 16,
