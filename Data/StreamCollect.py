@@ -68,13 +68,13 @@ while True:
     voltage_threshold = 0
     validation_loop = True
 
-    last_device = "last.txt"
+    last_run = "last.txt"
     last_dev_data = ''
-    with open(last_device, 'r') as f:
+    with open(last_run, 'r') as f:
         data = f.readline()
         last_dev_data = data.split(':')
 
-        print(f"Last device\n {last_dev_data[0]} {last_dev_data[1]} ({last_dev_data[5]}),  {last_dev_data[3]}:{last_dev_data[4]} {last_dev_data[2]}V\n")
+        print(f"Last run\n {last_dev_data[0]} {last_dev_data[1]} ({last_dev_data[5]}),  {last_dev_data[3]}:{last_dev_data[4]} {last_dev_data[2]}V\n")
 
     skipVal = False
     if multi_cap and loopCount > 1 and loopCount <= cap_count:
@@ -87,6 +87,18 @@ while True:
         BAUD = int(last_dev_data[4])
         label = last_dev_data[5]
     
+
+    while validation_loop:
+        protocol = input("Protocol type\nA) UART\nB) I2C\nC) SPI\n> ")
+        protocol = protocol.lower()
+        validation_loop = False
+        if protocol not in ['a', 'b', 'c']:
+            print("Invalid input")
+            validation_loop = True
+        if protocol == 'c':
+            print("SPI not supported yet")
+            validation_loop = True
+            
     while validation_loop:
         platform = input("Device platform type\nA) Arduino\nB) Raspberry Pi\nC) ESP\nZ) Last device\n0) Not listed\n> ")
         platform = platform.lower()
@@ -425,6 +437,6 @@ while True:
 
     print(f"\nData saved to {dir}voltages_{data_size}_{CSV_num}.csv")
 
-    with open(last_device, 'w') as f:
+    with open(last_run, 'w') as f:
         lastDev = f"{platform}:{model}:{device_voltage}:{data_size}:{str(BAUD)}:{label}"
         f.write(lastDev)
