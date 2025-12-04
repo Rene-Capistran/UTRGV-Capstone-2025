@@ -169,13 +169,13 @@ while True:
         data_size = input("Data size\nA) Small\nB) Medium\nc) Large\n> ")
         if data_size.lower() == 'a':
             data_size = 'Small'
-            capture_time = 250_000_000       
+            capture_time = 200_000_000       
         elif data_size.lower() == 'b':
             data_size = 'Medium'
-            capture_time = 500_000_000
+            capture_time = 400_000_000
         elif data_size.lower() == 'c':
             data_size = 'Large'
-            capture_time = 1_000_000_000
+            capture_time = 700_000_000
         else:
             print("Invalid input")
             validation_loop = True
@@ -279,12 +279,17 @@ while True:
             )
             assert_pico2000_ok(res)
 
-        sample_interval = 1500
-        time_units = 2
-        max_samples = 100_000
+        if protocol == 'UART':
+            sample_interval = 1500
+            time_units = 2
+            max_samples = 100_000
+        elif protocol == 'I2C':
+            sample_interval = 300
+            time_units = 2
+            max_samples = 250_000
         auto_stop = False
         samples_per_aggregate = 1
-        overview_buffer_size = 50_000
+        overview_buffer_size = 100_000
 
         res = ps2000.ps2000_run_streaming_ns(
             device.handle,
@@ -338,26 +343,36 @@ while True:
                     print('saving template figure')
                     fig.savefig(dir + f'template_{data_size}.png')
             elif protocol == 'I2C':
-                fig, ax = plt.subplots()
+                fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8), sharex=True)
 
-                ax.set_xlabel('time/ms')
-                ax.set_ylabel('voltage/V')
-                ax.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts_a)), volts_a, label='SDA (Channel A)')
-                ax.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts_b)), volts_b, label='SCL (Channel B)')
-                ax.set_title(f'{platform} {model} ({label}), {protocol}, {data_size}:{BAUD}')
-                ax.legend()
-
+                # Plot SDA on top subplot
+                ax1.set_ylabel('SDA Voltage (V)')
+                ax1.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts_a)), volts_a, label='SDA (Channel A)', color = 'g')
+                ax1.axhline(y=voltage_threshold, color='r', linestyle='--', alpha=0.7, label=f'Threshold ({voltage_threshold}V)')
+                ax1.grid(True, alpha=0.3)
+                ax1.legend()
+                ax1.set_title(f'{platform} {model} ({label}), {protocol}, {data_size} - SDA Signal')
+                
+                # Plot SCL on bottom subplot  
+                ax2.set_xlabel('Time (ms)')
+                ax2.set_ylabel('SCL Voltage (V)')
+                ax2.plot(np.linspace(0, (end_time - start_time) * 1e-6, len(volts_b)), volts_b, label='SCL (Channel B)', color='#FFA500')
+                ax2.axhline(y=voltage_threshold, color='r', linestyle='--', alpha=0.7, label=f'Threshold ({voltage_threshold}V)')
+                ax2.grid(True, alpha=0.3)
+                ax2.legend()
+                ax2.set_title('SCL Signal')
+                
+                plt.tight_layout()
                 plt.show()
-                if protocol == 'uart':
-                    dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
-                else:
-                    dir = f"Data/Devices/{protocol}/{platform}/{model}/{label}/"
+
+                dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
+
                 if not os.path.isfile(dir + f'template_{data_size}.png'):
                     print('saving template figure')
                     fig.savefig(dir + f'template_{data_size}.png')
 
 
-    # Decoding bytes
+    # Decoding UART bytes 
     print("\nDecoding bytes...")
 
     if protocol == 'UART':
@@ -373,7 +388,7 @@ while True:
         # Calculate samples per bit
         samples_per_bit = int(1 / (BAUD * sample_period))
 
-        # Find start bits (falling edge: 1 -> 0)
+        # Find start bits
         bits_per_byte = 10  # 1 start, 8 data, 1 stop
         frame_length = bits_per_byte * samples_per_bit
 
@@ -488,20 +503,18 @@ while True:
 
 
     # Save to CSV
-    if protocol == 'UART':
-        dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
-    else:
-        dir = f"Data/Devices/{protocol}/{platform}/{model}/{label}/"
+
+    dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
     CSV_num = 0
 
-    if protocol == 'UART':
-        with open('metadata.json', 'r+') as f:
-            data = json.load(f)
-            CSV_num = data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] + 1
-            data[platform][model][str(BAUD)][label][f'Captures_{data_size}'] = CSV_num
-            f.seek(0)
-            json.dump(data, f, indent=4)
-            f.truncate()
+
+    with open('Data/metadata.json', 'r+') as f:
+        data = json.load(f)
+        CSV_num = data[protocol][platform][model][str(BAUD)][label][f'Captures_{data_size}'] + 1
+        data[protocol][platform][model][str(BAUD)][label][f'Captures_{data_size}'] = CSV_num
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
 
 
     with open(dir + f'voltages_{data_size}_{CSV_num}.csv', "w", newline='') as f:

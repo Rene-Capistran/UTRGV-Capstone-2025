@@ -46,6 +46,11 @@ class USARTConfig:
                                      self.baud_rate)
         return str(txt)
 
+class I2CConfig:
+    def __init__(self, frequency=100000, device_voltage=3.3, pullup_resistance=4700):
+        self.frequency = frequency
+        
+
 class BoardExperiment:
     def __init__(self, path, label, msg_size, char_len, usart_config:USARTConfig):
         # TODO - infer usart_config?
