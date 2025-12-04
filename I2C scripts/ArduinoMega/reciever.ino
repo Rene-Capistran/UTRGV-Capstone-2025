@@ -1,29 +1,32 @@
-// Receiver
-#include <SoftwareSerial.h>
+#include <Wire.h>
 
-void blink();
+String recvBuffer = "";
+unsigned long lastChunkTime = 0;
+bool receiving = false;
 
-SoftwareSerial uartReceiver(10, 11);
+void receiveEvent(int howMany) {
+  receiving = true;
+  lastChunkTime = millis();  
 
-int count = 0;
-
-void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
-  Serial.begin(9600);
-  uartReceiver.begin(9600);
-  Serial.print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nReceiving...\n");
-}
-
-
-void loop() {
-  if(uartReceiver.available() > 0){
-    count++;
-    char buffer[20];
-    String message = uartReceiver.readStringUntil('\n');
-
-    // Output formatting
-    String msg = static_cast<String>(count) + ": " + message;
-    Serial.println(msg);
+  while (Wire.available()) {
+    recvBuffer += (char)Wire.read();
   }
 }
 
+void setup() {
+  Serial.begin(9600);
+  Wire.begin(8);
+  Wire.onReceive(receiveEvent);
+}
+
+void loop() {
+
+  // If we've received something BUT no new chunks for 20 ms → print full message
+  if (receiving && millis() - lastChunkTime > 20) {
+
+    Serial.println(recvBuffer);   // print the FULL message at once
+
+    recvBuffer = "";              // clear for next message
+    receiving = false;
+  }
+}
