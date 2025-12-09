@@ -231,9 +231,9 @@ while True:
         high_threshold = 3.5
         low_threshold = 1.5
     elif device_voltage == 3.3:
-        voltage_threshold = 3
-        high_threshold = 2.7
-        low_threshold = 1.5 
+        voltage_threshold = 1.65
+        high_threshold = 2.3
+        low_threshold = 0.8
     else:
         print("Unknown device voltage, using default threshold of 2.5V")
         voltage_threshold = 2.5
