@@ -1,1 +1,1 @@
-Arduino:Mega:5.0:Large:100000:D:I2C
+RPi:5B:3.3:Large:100000:A:I2C

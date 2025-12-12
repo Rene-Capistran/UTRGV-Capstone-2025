@@ -14,13 +14,13 @@ import os
 loopCount = 0
 cap_count = ''
 protocol = ''
-multi_cap = input("Auto capture?\nA) no\nB) 15\nC) 90\nD) Custom\n> ")
+multi_cap = input("Auto capture?\nA) no\nB) 15\nC) 50\nD) Custom\n> ")
 if multi_cap.lower() == 'a':
     cap_count = 0
 elif multi_cap.lower() == 'b':
     cap_count = 15
 elif multi_cap.lower() == 'c':
-    cap_count = 90
+    cap_count = 50
 elif multi_cap.lower() == 'd':
     cap_count = int(input("Custom amount\n> "))
 

@@ -4,7 +4,7 @@
             "Mega": {
                 "100000": {
                     "A": {
-                        "Captures_Small": 20,
+                        "Captures_Small": 15,
                         "Captures_Medium": 15,
                         "Captures_Large": 15
                     },
@@ -123,18 +123,68 @@
         },
         "RPi": {
             "5B": {
-                "A": {},
-                "B": {},
-                "C": {},
-                "D": {},
-                "E": {},
-                "F": {},
-                "G": {},
-                "H": {},
-                "I": {},
-                "J": {},
-                "K": {},
-                "L": {}
+                "100000": {
+                    "A": {
+                        "Captures_Small": 50,
+                        "Captures_Medium": 50,
+                        "Captures_Large": 50
+                    },
+                    "B": {
+                        "Captures_Small": 50,
+                        "Captures_Medium": 50,
+                        "Captures_Large": 50
+                    },
+                    "C": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "D": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "E": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "F": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "G": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "H": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "I": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "J": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "K": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    },
+                    "L": {
+                        "Captures_Small": 0,
+                        "Captures_Medium": 0,
+                        "Captures_Large": 0
+                    }
+                }
             }
         }
     },
