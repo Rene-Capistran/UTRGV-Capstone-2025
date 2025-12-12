@@ -3,7 +3,7 @@
 
 void blink();
 
-SoftwareSerial uartReceiver(2, 3);
+SoftwareSerial uartReceiver(10, 11);
 
 int count = 0;
 
