@@ -7,8 +7,8 @@ https://www.picotech.com/downloads/sdk-release/pico-software-development-kit-64b
 python wrappers:  
 https://github.com/picotech/picosdk-python-wrappers  
 
-ML model:  
-https://colab.research.google.com/drive/1G1x4J28RXGb0q3eHFxwq0NBohjuQ1Eme?usp=sharing  
+Git LFS:  
+https://git-lfs.com/  
 
 git clone https://github.com/picotech/picosdk-python-wrappers.git  
 cd picotech  
