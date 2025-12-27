@@ -11,7 +11,7 @@ import csv
 import scipy.signal as signal
 import os
 
-loopCount = 0
+loop_count = 0
 cap_count = ''
 protocol = ''
 multi_cap = input("Auto capture?\nA) no\nB) 15\nC) 50\nD) Custom\n> ")
@@ -25,7 +25,7 @@ elif multi_cap.lower() == 'd':
     cap_count = int(input("Custom amount\n> "))
 
 while True:
-    loopCount += 1
+    loop_count += 1
 
     BAUD = 9600
 
@@ -41,7 +41,6 @@ while True:
         c_uint32
     )
 
-    # adc_values = [] old
     adc_values_a = []  # Channel A (SDA for I2C, TX/RX for UART)
     adc_values_b = []  # Channel B (SCL for I2C)
 
@@ -78,10 +77,14 @@ while True:
         else:
             print(f"Last run\n {last_dev_data[0]} {last_dev_data[1]} ({last_dev_data[5]}),  {last_dev_data[3]}:{last_dev_data[4]} {last_dev_data[2]}V\n")
 
-    skipVal = False
-    if multi_cap and loopCount > 1 and loopCount <= cap_count:
-        skipVal = True
+    skip_val = False
+
+    # Auto capture handling
+    if multi_cap and loop_count > 1 and loop_count <= cap_count:
+        skip_val = True
         validation_loop = False
+
+        # Using last device data
         platform = last_dev_data[0]
         model = last_dev_data[1]
         device_voltage = float(last_dev_data[2])
@@ -90,13 +93,14 @@ while True:
         label = last_dev_data[5]
         protocol = last_dev_data[6] if len(last_dev_data) > 6 else 'UART'
     
+    # Device platform selection
     while validation_loop:
         platform = input("Device platform type\nA) Arduino\nB) Raspberry Pi\nC) ESP\nZ) Last device\n0) Not listed\n> ")
         platform = platform.lower()
         if platform in ['a', 'b', 'c', 'z', '0']:
             validation_loop = False
             if platform == 'z':
-                skipVal = True
+                skip_val = True
                 platform = last_dev_data[0]
                 model = last_dev_data[1]
                 device_voltage = float(last_dev_data[2])
@@ -109,10 +113,12 @@ while True:
             print("Invalid input")
             validation_loop = True
 
-    if skipVal:
+    if skip_val:
         validation_loop = False
     else:
         validation_loop = True 
+
+    # Device model selection
     while validation_loop:
         validation_loop = False
         if platform == 'a':
@@ -153,7 +159,7 @@ while True:
             validation_loop = True
 
 
-    if skipVal:
+    if skip_val:
         validation_loop = False 
         if data_size == 'Small':
             capture_time = 250_000_000  
@@ -163,7 +169,7 @@ while True:
             capture_time = 1_000_000_000  
     else:
         validation_loop = True 
-
+    # Data size selection
     while validation_loop:
         validation_loop = False
         data_size = input("Data size\nA) Small\nB) Medium\nc) Large\n> ")
@@ -180,10 +186,12 @@ while True:
             print("Invalid input")
             validation_loop = True
 
-    if skipVal:
+    if skip_val:
         validation_loop = False   
     else:
         validation_loop = True 
+    
+    # Device label selection
     while validation_loop:
         validation_loop = False
         label = input("Device label (letter from A-L)\n> ")
@@ -193,10 +201,11 @@ while True:
         else:
             label = label.upper()
 
-    if skipVal:
+    if skip_val:
         validation_loop = False  
     else:
         validation_loop = True 
+    # Protocol selection
     while validation_loop:
         validation_loop = False
         protocol_input = input(f"Communication Protocol\nA) UART\nB) I2C\n> ")
@@ -208,11 +217,12 @@ while True:
             print("Invalid input")
             validation_loop = True
 
-    if skipVal:
+    if skip_val:
         validation_loop = False  
     else:
         validation_loop = True 
     
+    # Baud rate selection for UART
     if protocol == 'UART':
         while validation_loop:
             validation_loop = False
@@ -224,8 +234,11 @@ while True:
             else:
                 print("Invalid input")
                 validation_loop = True
+    # If I2C, set baud to 100k
     else:
         BAUD = 100000  
+    
+    # Set voltage thresholds based on device voltage
     if device_voltage == 5:
         voltage_threshold = 2.5
         high_threshold = 3.5
@@ -235,9 +248,9 @@ while True:
         high_threshold = 2.3
         low_threshold = 0.8
     else:
-        print("Unknown device voltage, using default threshold of 2.5V")
-        voltage_threshold = 2.5
+        print("Unknown device voltage")
 
+    # Callback function to collect overview buffers
     def get_overview_buffers(buffers, _overflow, _triggered_at, _triggered, _auto_stop, n_values):
         adc_values_a.extend(buffers[0][0:n_values])
         if protocol == 'I2C':
@@ -279,6 +292,7 @@ while True:
             )
             assert_pico2000_ok(res)
 
+        # Set sampling parameters
         if protocol == 'UART':
             sample_interval = 1500
             time_units = 2
@@ -291,6 +305,7 @@ while True:
         samples_per_aggregate = 1
         overview_buffer_size = 100_000
 
+        # Start streaming mode
         res = ps2000.ps2000_run_streaming_ns(
             device.handle,
             sample_interval,
@@ -302,8 +317,8 @@ while True:
         )
         assert_pico2000_ok(res)
 
+        # Collect data for the specified capture time
         start_time = time.time_ns()
-
         while time.time_ns() - start_time < capture_time:
             ps2000.ps2000_get_streaming_last_values(
                 device.handle,
@@ -314,20 +329,23 @@ while True:
 
         ps2000.ps2000_stop(device.handle)
 
-        # Gathering raw data for CSV
+        # Gathering data
         sample_period_s = float(sample_interval) * 1e-9
         time_array_s = np.arange(len(adc_values_a), dtype=np.float64) * sample_period_s
         time_array_ms = time_array_s * 1e3
 
+        # create voltage array for channel A
         range_index = ps2000.PS2000_VOLTAGE_RANGE['PS2000_5V']
         volts_a = np.array(adc_to_v(adc_values_a, range_index), dtype=np.float64)
         
+        # create voltage array for channel B if I2C
         if protocol == 'I2C':
             volts_b = np.array(adc_to_v(adc_values_b, range_index), dtype=np.float64)
         
         samples_per_bit = max(1, int(1.0 / (BAUD * sample_period_s)))
 
-        if loopCount <= 1:
+        # Plotting
+        if loop_count <= 1: # Only plot on first iteration of loop
             if protocol == 'UART':
                 fig, ax = plt.subplots()
 
@@ -338,6 +356,7 @@ while True:
 
                 plt.show()
 
+                # Save template figure if it doesn't exist
                 dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
                 if not os.path.isfile(dir + f'template_{data_size}.png'):
                     print('saving template figure')
@@ -365,16 +384,15 @@ while True:
                 plt.tight_layout()
                 plt.show()
 
+                # Save template figure if it doesn't exist
                 dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
-
                 if not os.path.isfile(dir + f'template_{data_size}.png'):
                     print('saving template figure')
                     fig.savefig(dir + f'template_{data_size}.png')
 
 
-    # Decoding UART bytes 
+    # Decoding UART bytes to verify capture validity
     print("\nDecoding bytes...")
-
     if protocol == 'UART':
         logic_levels = []
         for v in volts_a:
@@ -410,6 +428,7 @@ while True:
         decoded_bytes = []
         i = min_idle_samples
         byte_timings = []
+
         while i < len(logic_levels):
             if (
                 all(logic_levels[i - min_idle_samples : i])
@@ -502,12 +521,11 @@ while True:
         kept_times = kept_times - kept_times[0]
 
 
-    # Save to CSV
-
+    ## Save to CSV
     dir = f"Data/Devices/{protocol}/{platform}/{model}/{BAUD}/{label}/"
     CSV_num = 0
 
-
+    # Update metadata.json
     with open('Data/metadata.json', 'r+') as f:
         data = json.load(f)
         CSV_num = data[protocol][platform][model][str(BAUD)][label][f'Captures_{data_size}'] + 1
@@ -516,7 +534,7 @@ while True:
         json.dump(data, f, indent=4)
         f.truncate()
 
-
+    # write CSV
     with open(dir + f'voltages_{data_size}_{CSV_num}.csv', "w", newline='') as f:
         writer = csv.writer(f)
         writer.writerow(["Time (ms)", "Voltage (V)"])
@@ -526,6 +544,7 @@ while True:
     
     print(f"\nData saved to {dir}voltages_{data_size}_{CSV_num}.csv")
 
+    # Save last run data 
     with open(last_run, 'w') as f:
         lastDev = f"{platform}:{model}:{device_voltage}:{data_size}:{str(BAUD)}:{label}:{protocol}"
         f.write(lastDev)
