@@ -5,6 +5,7 @@ Preprocessing was done by extracting 20 statistical features from each raw captu
 Once preprocessing was finished, the datasets were fed to 5 machine learning algorithms: Random Forest, Support Vector Machine (SVM), K-Nearest Neighbors (KNN), Logistic Regression, and XGBoost. Afterwards, when the model with the highest accuracy was determined, it was deployed.
 
 ## Directory Structure
+```bash
 ├── Data/
 │   ├── StreamCollect.py          # Real-time data collection
 │   ├── Formatting/
@@ -18,8 +19,8 @@ Once preprocessing was finished, the datasets were fed to 5 machine learning alg
 ├── ML/
 │   ├── ml_model.ipynb            # initial ML training & evaluation notebook
 │   └── ml_model_final.ipynb      # Final ML training & evaluation notebook
-└── README.md                     # This
-
+└── README.md                     # Project documentation
+```
 ## Dependencies
 
 PicoSDK:  
